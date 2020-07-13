@@ -1,5 +1,4 @@
 import { Emitter } from "../../../events/emitter";
-import { Neuron } from "../Neuron";
 
 export interface NetworkModel {
   update(): void;

@@ -4,15 +4,15 @@ import { Neuron } from "./Neuron";
 export default class Network {
 
 
-  private _neurons: { [label: string]: Neuron } = {};
-  private _synapses: { [label: string]: Synapse } = {};
+  private _neurons: Record<string, Neuron> = {};
+  private _synapses: Record<string, Synapse> = {};
 
 
-  get neurons(): { [p: string]: Neuron } {
+  get neurons(): Record<string, Neuron> {
     return this._neurons;
   }
 
-  get synapses(): { [p: string]: Synapse } {
+  get synapses(): Record<string, Synapse> {
     return this._synapses;
   }
 
