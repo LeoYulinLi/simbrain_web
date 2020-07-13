@@ -1,5 +1,6 @@
 import "../styles/style.scss";
 import paper from "paper";
+import Network from "./model/network/Network";
 
 type ToolEvent = paper.ToolEvent;
 
@@ -30,6 +31,21 @@ document.addEventListener("DOMContentLoaded", () => {
   newPoint.onFrame = function () {
     this.rotate(3);
   };
+
+  const net = new Network();
+  const source = net.createNeuron({ value: 1 });
+  const target = net.createNeuron();
+  net.createSynapse({ source, target, weight: 0.9 });
+  net.createSynapse({ source: target, target: source });
+
+  net.update(net => {
+    console.log(JSON.stringify(Object.values(net.neurons).map(n => n.value)));
+  });
+
+  net.update(net => {
+    console.log(JSON.stringify(Object.values(net.neurons).map(n => n.value)));
+  });
+
 
 
 });

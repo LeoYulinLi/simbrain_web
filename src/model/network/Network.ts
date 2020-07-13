@@ -1,33 +1,45 @@
-import NetworkModel from "./interfaces/NetworkModel";
 import { Synapse } from "./Synapse";
 import { Neuron } from "./Neuron";
 
 export default class Network {
 
-  private _networkModels: Set<NetworkModel> = new Set<NetworkModel>();
 
-  get networkModels(): Set<NetworkModel> {
-    return this._networkModels;
+  private _neurons: { [label: string]: Neuron } = {};
+  private _synapses: { [label: string]: Synapse } = {};
+
+
+  get neurons(): { [p: string]: Neuron } {
+    return this._neurons;
   }
 
-  update() {
-    this.networkModels.forEach(m => m.update());
+  get synapses(): { [p: string]: Synapse } {
+    return this._synapses;
   }
 
-  createNeuron(options: ConstructorParameters<typeof Neuron>) {
+  update(peek?: (network: Network) => void): void {
+    Object.values(this.synapses).forEach(s => s.update());
+    Object.values(this.neurons).forEach(n => n.update());
+    if (peek) peek(this);
+  }
+
+  createNeuron(...options: ConstructorParameters<typeof Neuron>): Neuron {
     const newNeuron = new Neuron(...options);
-    this.networkModels.add(newNeuron);
+    const id = Math.random();
+    this.neurons[id] = newNeuron;
     newNeuron.events.on("delete", () => {
-      this.networkModels.delete(newNeuron);
+      delete this.neurons[id];
     });
+    return newNeuron;
   }
 
-  createSynapse(options: ConstructorParameters<typeof Synapse>) {
+  createSynapse(...options: ConstructorParameters<typeof Synapse>): Synapse {
     const newSynapse = new Synapse(...options);
-    this.networkModels.add(newSynapse);
+    const id = Math.random();
+    this.synapses[id] = newSynapse;
     newSynapse.events.on("delete", () => {
-      this.networkModels.delete(newSynapse);
+      delete this.synapses[id];
     });
+    return newSynapse;
   }
 
 }

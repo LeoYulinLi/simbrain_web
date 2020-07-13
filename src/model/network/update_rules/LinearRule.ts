@@ -2,7 +2,6 @@ import { NeuronUpdateRule } from "./NeuronUpdateRule";
 import BoundedUpdateRule from "./BoundedUpdateRule";
 import { Neuron } from "../Neuron";
 import clamp from "lodash.clamp";
-import "reflect-metadata";
 
 export class LinearRule extends NeuronUpdateRule implements BoundedUpdateRule {
 

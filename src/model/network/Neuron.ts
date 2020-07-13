@@ -22,7 +22,7 @@ export class Neuron implements LocatableModel, NetworkModel {
 
   events = eventEmitter<{ location: Coordinate, delete: Neuron }>();
 
-  constructor(options?: Pick<Partial<Neuron>, 'updateRule' | 'coordinate' | 'clamped'>) {
+  constructor(options?: Pick<Partial<Neuron>, 'updateRule' | 'coordinate' | 'clamped' | 'value'>) {
     Object.assign(this, options);
   }
 
