@@ -27,7 +27,10 @@ module.exports = {
       filename: "style.css"
     }),
     new HtmlWebpackPlugin({
-      title: "Simbrain Web"
+      title: "Simbrain Web",
+      meta: {
+        viewport: 'width=device-width, initial-scale=1, shrink-to-fit=no'
+      }
     })
   ],
   resolve: {
