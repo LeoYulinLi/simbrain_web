@@ -6,6 +6,7 @@
   "author": "LeoYulinLi",
   "license": "MIT",
   "dependencies": {
+    "lodash.clamp": "^4.0.3",
     "paper": "^0.12.11"
   },
   "scripts": {
@@ -13,6 +14,7 @@
     "watch": "webpack --watch --mode=development"
   },
   "devDependencies": {
+    "@types/lodash.clamp": "^4.0.6",
     "@types/mini-css-extract-plugin": "^0.9.1",
     "@types/node": "^14.0.22",
     "@types/webpack": "^4.41.21",
