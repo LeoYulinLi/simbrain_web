@@ -10,7 +10,7 @@ export class Neuron implements LocatableModel, NetworkModel {
 
   updateRule: NeuronUpdateRule = new LinearRule({ lowerBound: -1, upperBound: 1 });
 
-  coordinate: Coordinate = { x: 50, y: 50 };
+  private _coordinate: Coordinate = { x: 50, y: 50 };
 
   clamped = false;
 
@@ -46,6 +46,15 @@ export class Neuron implements LocatableModel, NetworkModel {
 
   delete(): void {
     this.events.fire("delete", this);
+  }
+
+  get coordinate(): Coordinate {
+    return this._coordinate;
+  }
+
+  set coordinate(value: Coordinate) {
+    this._coordinate = value;
+    this.events.fire("location", value);
   }
 
 }

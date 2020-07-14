@@ -12,16 +12,17 @@ export class NeuronNode {
   constructor(private neuron: Neuron) {
     this.circle.strokeWidth = 2;
     this.circle.strokeColor = new paper.Color("black");
-    this.circle.fillColor = new paper.Color("white");
-    this.number.content = this.neuron.value.toFixed(1);
+    this.circle.fillColor = new paper.Color("#ffffffaa");
+    this.number.content = this.neuron.value.toPrecision(1);
     this.number.justification = "center";
     this.number.fontSize = 16;
     this.number.translate(new paper.Point(0, - this.number.position.y));
     neuron.events.on("value", value => {
-      this.number.content = value.toFixed(1);
+      this.number.content = value.toPrecision(1);
     });
-    this._node.onMouseDrag = (event: paper.MouseEvent) => {
-      this._node.position = this._node.position.add(event.delta);
+    this.node.onMouseDrag = (event: paper.MouseEvent) => {
+      this.node.position = this.node.position.add(event.delta);
+      neuron.coordinate = event.point;
     };
     this.node.position = new paper.Point(neuron.coordinate);
   }

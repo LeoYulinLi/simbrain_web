@@ -10,8 +10,20 @@ export default class NetworkPanel {
 
   private lastClickPosition: Coordinate = { x: 0, y: 0 };
 
+  private layers = {
+    marquee: new paper.Layer(),
+    handles: new paper.Layer(),
+    nodes: new paper.Layer(),
+    connections: new paper.Layer()
+  }
+
   constructor(private network: Network) {
     network.events.on("neuronAdded", this.addNeuron.bind(this));
+
+    this.project.addLayer(this.layers.marquee);
+    this.project.addLayer(this.layers.handles);
+    this.project.addLayer(this.layers.nodes);
+    this.project.addLayer(this.layers.connections);
 
     const tool = new paper.Tool();
     tool.onMouseUp = (event: paper.MouseEvent) => {
@@ -27,7 +39,8 @@ export default class NetworkPanel {
 
   private addNeuron(neuron: Neuron) {
     const neuronNode = new NeuronNode(neuron);
-    this.project.activeLayer.addChild(neuronNode.node);
+    console.log(this.network.neurons);
+    this.layers.nodes.addChild(neuronNode.node);
     neuron.events.on("delete", () => {
       neuronNode.node.remove();
     });
@@ -35,5 +48,6 @@ export default class NetworkPanel {
       const { x, y } = location;
       neuronNode.node.position = new paper.Point(x, y);
     });
+    neuronNode.node.onMouseDown = () => neuronNode.node.bringToFront();
   }
 }
