@@ -10,20 +10,33 @@ export class Neuron implements LocatableModel, NetworkModel {
 
   updateRule: NeuronUpdateRule = new LinearRule({ lowerBound: -1, upperBound: 1 });
 
-  coordinate: Coordinate = { x: 0, y: 0 };
+  coordinate: Coordinate = { x: 50, y: 50 };
 
   clamped = false;
 
   bufferedValue = 0;
 
-  value = 0;
+  private _value = 0;
 
   fanOuts: Synapse[] = []
 
-  events = eventEmitter<{ location: Coordinate, delete: Neuron }>();
+  events = eventEmitter<{
+    location: Coordinate,
+    delete: Neuron,
+    value: number
+  }>();
 
   constructor(options?: Pick<Partial<Neuron>, 'updateRule' | 'coordinate' | 'clamped' | 'value'>) {
     Object.assign(this, options);
+  }
+
+  get value(): number {
+    return this._value;
+  }
+
+  set value(value: number) {
+    this._value = value;
+    this.events.fire("value", value);
   }
 
   update(): void {

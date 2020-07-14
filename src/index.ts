@@ -1,8 +1,7 @@
 import "../styles/style.scss";
 import paper from "paper";
 import Network from "./model/network/Network";
-
-type ToolEvent = paper.ToolEvent;
+import { NeuronNode } from "./nodes/network/NeuronNode";
 
 document.addEventListener("DOMContentLoaded", () => {
   const canvas = document.createElement("canvas");
@@ -15,20 +14,6 @@ document.addEventListener("DOMContentLoaded", () => {
   path.lineTo(start.add(new paper.Point(200, -50)));
 
   path.onFrame = function () {
-    this.rotate(3);
-  };
-
-  const tool = new paper.Tool();
-
-  const newPoint = new paper.Path.Rectangle(new paper.Point([5, 5]), new paper.Size([20, 20]));
-  tool.onMouseDown = function (event: ToolEvent) {
-    console.log("here");
-    newPoint.strokeColor = new paper.Color("black");
-    newPoint.strokeWidth = 3;
-    newPoint.add(event.point);
-  };
-
-  newPoint.onFrame = function () {
     this.rotate(3);
   };
 
@@ -46,6 +31,16 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log(JSON.stringify(Object.values(net.neurons).map(n => n.value)));
   });
 
+  paper.view.onClick = () => {
+    console.log("there");
+    paper.project.activeLayer.addChild(new NeuronNode(source).node);
+  };
 
+  const tool = new paper.Tool();
+
+  tool.onKeyDown = () => {
+    console.log("here");
+    net.update();
+  };
 
 });

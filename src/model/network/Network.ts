@@ -1,12 +1,16 @@
 import { Synapse } from "./Synapse";
 import { Neuron } from "./Neuron";
+import eventEmitter from "../../events/emitter";
 
 export default class Network {
-
 
   private _neurons: Record<string, Neuron> = {};
   private _synapses: Record<string, Synapse> = {};
 
+  readonly events = eventEmitter<{
+    neuronAdded: Neuron,
+    synapseAdded: Synapse
+  }>();
 
   get neurons(): Record<string, Neuron> {
     return this._neurons;
@@ -29,6 +33,7 @@ export default class Network {
     newNeuron.events.on("delete", () => {
       delete this.neurons[id];
     });
+    this.events.fire("neuronAdded", newNeuron);
     return newNeuron;
   }
 
@@ -39,6 +44,7 @@ export default class Network {
     newSynapse.events.on("delete", () => {
       delete this.synapses[id];
     });
+    this.events.fire("synapseAdded", newSynapse);
     return newSynapse;
   }
 
