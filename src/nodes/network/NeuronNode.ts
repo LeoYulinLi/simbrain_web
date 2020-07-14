@@ -18,13 +18,12 @@ export class NeuronNode {
     this.number.fontSize = 16;
     this.number.translate(new paper.Point(0, - this.number.position.y));
     neuron.events.on("value", value => {
-      console.log("value");
       this.number.content = value.toFixed(1);
     });
     this._node.onMouseDrag = (event: paper.MouseEvent) => {
-      console.log("here");
       this._node.position = this._node.position.add(event.delta);
     };
+    this.node.position = new paper.Point(neuron.coordinate);
   }
 
   get node(): paper.Group {
