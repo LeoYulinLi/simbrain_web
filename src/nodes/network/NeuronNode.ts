@@ -1,8 +1,9 @@
 import { Neuron } from "../../model/network/Neuron";
 import paper from "paper";
 import eventEmitter from "../../events/emitter";
+import ScreenElement from "./ScreenElement";
 
-export class NeuronNode {
+export class NeuronNode extends ScreenElement {
 
   private number = new paper.PointText(new paper.Point(0, 0));
 
@@ -10,18 +11,29 @@ export class NeuronNode {
 
   private _node = new paper.Group([this.circle, this.number]);
 
+  private nodeHandle = new paper.Shape.Rectangle(this.circle.bounds.size);
+
   readonly events = eventEmitter<{
-    click: NeuronNode
+    selected: NeuronNode
   }>()
 
   constructor(private neuron: Neuron) {
+    super();
     this.circle.strokeColor = new paper.Color("black");
     this.circle.fillColor = new paper.Color("#ffffffaa");
+
     this.number.content = this.neuron.value.toPrecision(1);
     this.number.justification = "center";
     this.number.fontSize = 11;
     this.number.fontFamily = "Arial";
     this.number.translate(new paper.Point(0, - this.number.position.y));
+
+    this.nodeHandle.scale(1.2);
+    this.nodeHandle.strokeColor = new paper.Color("green");
+    this.nodeHandle.bounds.center = this.circle.bounds.center;
+    this.node.addChild(this.nodeHandle);
+    this.nodeHandle.visible = false;
+
     neuron.events.on("value", value => {
       this.number.content = value.toPrecision(1);
     });
@@ -30,10 +42,18 @@ export class NeuronNode {
       neuron.coordinate = event.point;
     };
     this.node.position = new paper.Point(neuron.coordinate);
+    this.node.on("hi", (obj: string[]) => console.log(JSON.stringify(obj)));
+  }
 
-    // "redirect" clicks to the main node
-    this.circle.onClick = () => this.events.fire("click", this);
-    this.number.onClick = () => this.events.fire("click", this);
+  select(): void {
+    this.nodeHandle.visible = true;
+    console.log(this.nodeHandle.bounds);
+    console.log(this.circle.bounds);
+    this.events.fire("selected", this);
+  }
+
+  unselect(): void {
+    this.nodeHandle.visible = false;
   }
 
   get node(): paper.Group {

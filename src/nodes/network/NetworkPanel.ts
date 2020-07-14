@@ -3,6 +3,7 @@ import paper from "paper";
 import { NeuronNode } from "./NeuronNode";
 import { Neuron } from "../../model/network/Neuron";
 import { Coordinate } from "../../utils/geom";
+import SelectionManager from "./SelectionManager";
 
 export default class NetworkPanel {
 
@@ -10,7 +11,7 @@ export default class NetworkPanel {
 
   private lastClickPosition: Coordinate = { x: 0, y: 0 };
 
-  private nodeHandles: paper.Shape[] = [];
+  private selectionManager = new SelectionManager();
 
   private layers = {
     marquee: new paper.Layer(),
@@ -27,24 +28,21 @@ export default class NetworkPanel {
     this.project.addLayer(this.layers.handles);
     this.project.addLayer(this.layers.marquee);
 
-    const tool = new paper.Tool();
-    tool.onMouseUp = (event: paper.MouseEvent) => {
+    paper.tool.onMouseUp = (event: paper.MouseEvent) => {
       this.lastClickPosition = event.point;
       this.project.view.zoom = this.preferredZoomLevel;
       this.project.view.center = this.layerBound.center;
     };
 
-    tool.onMouseDown = () => {
-      this.nodeHandles.forEach(r => r.remove());
-    };
+    console.log(paper.tools);
 
-    tool.onKeyDown = (event: paper.KeyEvent) => {
+    paper.tool.on("keydown", (event: paper.KeyEvent) => {
       switch (event.key) {
       case "p":
         network.createNeuron({ coordinate: this.lastClickPosition });
         break;
       }
-    };
+    });
   }
 
   get preferredZoomLevel(): number {
@@ -70,12 +68,12 @@ export default class NetworkPanel {
       neuronNode.node.position = new paper.Point(x, y);
     });
     neuronNode.node.onMouseDown = () => neuronNode.node.bringToFront();
-    neuronNode.events.on("click", () => {
-      const rect = new paper.Shape.Rectangle(neuronNode.node.bounds);
-      rect.scale(1.2);
-      rect.strokeColor = new paper.Color("green");
-      this.nodeHandles.push(rect);
-      this.layers.handles.addChild(rect);
+    neuronNode.node.on("click", (event: paper.MouseEvent) => {
+      event.stopPropagation();
+      this.selectionManager.select([neuronNode]);
+    });
+    this.project.view.on("click", () => {
+      this.selectionManager.select([]);
     });
   }
 }
