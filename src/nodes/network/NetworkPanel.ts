@@ -66,8 +66,7 @@ export default class NetworkPanel {
 
     paper.tool.onMouseUp = (event: paper.MouseEvent) => {
       this.lastClickPosition = event.point;
-      this.project.view.zoom = this.preferredZoomLevel;
-      this.project.view.center = this.layerBound.center;
+      this.autoZoom();
     };
 
     paper.tool.on("keydown", (event: paper.KeyEvent) => this.keyBindings[event.key]?.());
@@ -90,6 +89,7 @@ export default class NetworkPanel {
   private addNeuron(neuron: Neuron) {
     const neuronNode = new NeuronNode(neuron);
     this.layers.nodes.addChild(neuronNode.node);
+    this.autoZoom();
     neuron.events.on("delete", () => {
       neuronNode.node.remove();
     });
@@ -114,6 +114,11 @@ export default class NetworkPanel {
     const synapseNode = new SynapseNode(synapse);
     this.layers.connections.addChild(synapseNode.node);
     synapse.events.on("delete", () => synapseNode.node.remove());
+  }
+
+  private autoZoom() {
+    this.project.view.zoom = this.preferredZoomLevel;
+    this.project.view.center = this.layerBound.center;
   }
 
 }
