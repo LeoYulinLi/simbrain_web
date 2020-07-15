@@ -28,7 +28,7 @@ export default class NetworkPanel {
       this.selectionManager.sourceNodes.forEach(s => {
         this.selectionManager.selectedNodes.forEach(t => {
           if (t instanceof NeuronNode) {
-            this.network.createSynapse({ source: s.neuron, target: t.neuron });
+            this.network.createSynapse({ source: s.neuron, target: t.neuron, weight: Math.random() * 5 - 2 });
           }
         });
       });

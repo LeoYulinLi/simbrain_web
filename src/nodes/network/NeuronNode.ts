@@ -5,9 +5,16 @@ import ScreenElement from "./ScreenElement";
 
 export class NeuronNode extends ScreenElement {
 
-  private number = new paper.PointText(new paper.Point(0, 0));
+  private number = new paper.PointText({
+    point: [0, 0],
+    insert: false
+  });
 
-  private circle = new paper.Shape.Circle(new paper.Point(0, 0), 12);
+  private circle = new paper.Shape.Circle({
+    point: [0, 0],
+    radius: 12,
+    insert: false
+  });
 
   private _node = new paper.Group([this.circle, this.number]);
 
