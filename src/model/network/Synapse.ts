@@ -18,9 +18,9 @@ export class Synapse implements NetworkModel {
   constructor(options: Pick<Synapse, 'source' | 'target'> & Pick<Partial<Synapse>, 'weight'>) {
     const { source, target } = options;
     Object.assign(this, options);
-    source.events.on("delete", this.delete);
+    source.events.on("delete", this.delete.bind(this));
     source.events.on("location", () => this.events.fire("location", this));
-    target.events.on("delete", this.delete);
+    target.events.on("delete", this.delete.bind(this));
     target.events.on("location", () => this.events.fire("location", this));
   }
 

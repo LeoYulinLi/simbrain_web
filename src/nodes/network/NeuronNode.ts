@@ -43,12 +43,17 @@ export class NeuronNode extends ScreenElement {
     this.sourceHandle.visible = false;
 
     neuron.events.on("value", value => {
-      this.number.content = value.toPrecision(1);
+      this.number.content = (Math.round(value * 10) / 10).toPrecision(1);
+      this.circle.fillColor = this.activationColor;
     });
-    this.node.onMouseDrag = (event: paper.MouseEvent) => {
+
+    this.node.on("mousedrag", (event: paper.MouseEvent) => {
       this.node.position = this.node.position.add(event.delta);
       neuron.coordinate = event.point;
-    };
+    });
+
+    this.neuron.events.on("selected", () => this.select());
+
     this.node.position = new paper.Point(neuron.coordinate);
     this.node.on("hi", (obj: string[]) => console.log(JSON.stringify(obj)));
   }
@@ -70,7 +75,36 @@ export class NeuronNode extends ScreenElement {
     this.sourceHandle.visible = false;
   }
 
+  increaseActivation(): void {
+    this.neuron.value += 0.1;
+  }
+
+  decreaseActivation(): void {
+    this.neuron.value -= 0.1;
+  }
+
   get node(): paper.Group {
     return this._node;
+  }
+
+  private get activationColor(): paper.Color {
+    const { value, updateRule: { graphicalUpperBound, graphicalLowerBound, graphicalNeutral } } = this.neuron;
+    if (value > graphicalNeutral) {
+      const saturation = 1 - (graphicalUpperBound - value) / (graphicalUpperBound - graphicalNeutral);
+      const color = new paper.Color("red");
+      color.saturation = saturation;
+      color.brightness = 1;
+      return color;
+    } else {
+      const saturation = 1 - (value - graphicalLowerBound) / (graphicalNeutral - graphicalLowerBound);
+      const color = new paper.Color("blue");
+      color.saturation = saturation;
+      color.brightness = 1;
+      return color;
+    }
+  }
+
+  delete(): void {
+    this.neuron.delete();
   }
 }

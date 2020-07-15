@@ -34,8 +34,13 @@ export default class SelectionManager {
     screenElements.forEach(e => this.selectedNodes.add(e));
   }
 
+  addSelection(screenElements: ScreenElement[]): void {
+    screenElements.forEach(e => this.selectedNodes.add(e));
+  }
+
   markSelectionAsSource(): void {
     this.sourceNodes.forEach(n => n.removeSource());
+    this.sourceNodes.clear();
     this.selectedNodes.forEach(e => {
       if (e instanceof NeuronNode) {
         e.markAsSource();

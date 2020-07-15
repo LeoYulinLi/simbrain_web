@@ -17,9 +17,43 @@ export default class NetworkPanel {
 
   private layers = {
     marquee: new paper.Layer(),
-    handles: new paper.Layer(),
     nodes: new paper.Layer(),
     connections: new paper.Layer()
+  }
+
+  private keyBindings: {[key: string]: () => void} = {
+    "p": () => this.network.createNeuron({ coordinate: this.lastClickPosition }),
+    "1": () => this.selectionManager.markSelectionAsSource(),
+    "2": () => {
+      this.selectionManager.sourceNodes.forEach(s => {
+        this.selectionManager.selectedNodes.forEach(t => {
+          if (t instanceof NeuronNode) {
+            this.network.createSynapse({ source: s.neuron, target: t.neuron });
+          }
+        });
+      });
+    },
+    "up": () => {
+      this.selectionManager.selectedNodes.forEach(t => {
+        if (t instanceof NeuronNode) {
+          t.increaseActivation();
+        }
+      });
+    },
+    "down": () => {
+      this.selectionManager.selectedNodes.forEach(node => {
+        if (node instanceof NeuronNode) {
+          node.decreaseActivation();
+        }
+      });
+    },
+    "space": () => this.network.update(),
+    "n": () => Object.values(this.network.neurons).forEach(neuron => neuron.select()),
+    "delete": () => this.selectionManager.selectedNodes.forEach(n => n.delete()),
+    "d": () => {
+      console.log(this.network.neurons);
+      console.log(this.network.synapses);
+    }
   }
 
   constructor(private network: Network) {
@@ -28,7 +62,6 @@ export default class NetworkPanel {
 
     this.project.addLayer(this.layers.connections);
     this.project.addLayer(this.layers.nodes);
-    this.project.addLayer(this.layers.handles);
     this.project.addLayer(this.layers.marquee);
 
     paper.tool.onMouseUp = (event: paper.MouseEvent) => {
@@ -37,27 +70,7 @@ export default class NetworkPanel {
       this.project.view.center = this.layerBound.center;
     };
 
-    console.log(paper.tools);
-
-    paper.tool.on("keydown", (event: paper.KeyEvent) => {
-      switch (event.key) {
-        case "p":
-          network.createNeuron({ coordinate: this.lastClickPosition });
-          break;
-        case "1":
-          this.selectionManager.markSelectionAsSource();
-          break;
-        case "2":{
-          this.selectionManager.sourceNodes.forEach(s => {
-            this.selectionManager.selectedNodes.forEach(t => {
-              if (t instanceof NeuronNode) {
-                network.createSynapse({ source: s.neuron, target: t.neuron });
-              }
-            });
-          });
-        }
-      }
-    });
+    paper.tool.on("keydown", (event: paper.KeyEvent) => this.keyBindings[event.key]?.());
 
   }
 
@@ -83,6 +96,9 @@ export default class NetworkPanel {
       const { x, y } = location;
       neuronNode.node.position = new paper.Point(x, y);
     });
+    neuronNode.events.on("selected", () => {
+      this.selectionManager.addSelection([neuronNode]);
+    });
     neuronNode.node.onMouseDown = () => neuronNode.node.bringToFront();
     neuronNode.node.on("click", (event: paper.MouseEvent) => {
       event.stopPropagation();
@@ -97,7 +113,6 @@ export default class NetworkPanel {
     const synapseNode = new SynapseNode(synapse);
     this.layers.connections.addChild(synapseNode.node);
     synapse.events.on("delete", () => synapseNode.node.remove());
-    console.log(this.network.synapses);
   }
 
 }

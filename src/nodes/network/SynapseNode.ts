@@ -17,7 +17,6 @@ export default class SynapseNode extends ScreenElement {
     this.node.addChild(this.line);
 
     synapse.events.on("location", () => {
-      console.log("here");
       this.line.removeSegments();
       this.line.add(new paper.Point(this.synapse.source.coordinate), new paper.Point(this.synapse.target.coordinate));
     });
@@ -29,6 +28,10 @@ export default class SynapseNode extends ScreenElement {
 
   unselect(): void {
     console.log("unselected");
+  }
+
+  delete(): void {
+    this.synapse.delete();
   }
 
 }
