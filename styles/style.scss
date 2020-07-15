@@ -1,5 +1,25 @@
 body {
-    margin: 0;
-    height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333333;
     background: #eeeeee;
+    height: 100vh;
+    margin: 0;
+}
+
+.main {
+    max-width: 960px;
+    margin: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    flex-flow: column;
+    padding: 1rem;
+    canvas {
+        background: white;
+    }
+}
+
+* {
+    box-sizing: border-box;
 }

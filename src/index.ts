@@ -5,8 +5,16 @@ import NetworkPanel from "./nodes/network/NetworkPanel";
 
 document.addEventListener("DOMContentLoaded", () => {
   const canvas = document.createElement("canvas");
+  canvas.width = 800;
+  canvas.height = 600;
   paper.setup(canvas);
-  document.body.appendChild(canvas);
+
+  const mainDiv = document.createElement("div");
+  mainDiv.className = "main";
+
+  mainDiv.appendChild(canvas);
+
+  document.body.appendChild(mainDiv);
 
   paper.tool = new paper.Tool();
 

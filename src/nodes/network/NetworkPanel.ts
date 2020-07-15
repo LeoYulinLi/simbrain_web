@@ -76,10 +76,11 @@ export default class NetworkPanel {
 
   get preferredZoomLevel(): number {
     if (this.layerBound.isEmpty()) return 1;
-    return Math.min(
+    const zoomLevel =  Math.min(
       this.project.view.viewSize.width / this.layerBound.width,
       this.project.view.viewSize.height / this.layerBound.height
     );
+    if (zoomLevel < 10) return zoomLevel; else return 10;
   }
 
   get layerBound(): paper.Rectangle {
