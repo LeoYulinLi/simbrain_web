@@ -10,12 +10,18 @@ export class Synapse implements NetworkModel {
 
   weight = 1;
 
-  events =  eventEmitter<{ delete: Synapse }>();
+  events =  eventEmitter<{
+    delete: Synapse,
+    location: Synapse,
+  }>();
 
   constructor(options: Pick<Synapse, 'source' | 'target'> & Pick<Partial<Synapse>, 'weight'>) {
+    const { source, target } = options;
     Object.assign(this, options);
-    options.source.events.on("delete", this.delete);
-    options.target.events.on("delete", this.delete);
+    source.events.on("delete", this.delete);
+    source.events.on("location", () => this.events.fire("location", this));
+    target.events.on("delete", this.delete);
+    target.events.on("location", () => this.events.fire("location", this));
   }
 
   update() {

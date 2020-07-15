@@ -1,10 +1,13 @@
 import paper from "paper";
 import ScreenElement from "./ScreenElement";
+import { NeuronNode } from "./NeuronNode";
 
 
 export default class SelectionManager {
 
-  private selectedNodes: Set<ScreenElement> = new Set();
+  readonly selectedNodes: Set<ScreenElement> = new Set();
+
+  readonly sourceNodes: Set<NeuronNode> = new Set();
 
   private multiSelect = false;
 
@@ -29,6 +32,16 @@ export default class SelectionManager {
     }
     screenElements.forEach(e => e.select());
     screenElements.forEach(e => this.selectedNodes.add(e));
+  }
+
+  markSelectionAsSource(): void {
+    this.sourceNodes.forEach(n => n.removeSource());
+    this.selectedNodes.forEach(e => {
+      if (e instanceof NeuronNode) {
+        e.markAsSource();
+        this.sourceNodes.add(e);
+      }
+    });
   }
 
 }

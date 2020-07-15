@@ -4,6 +4,8 @@ import { NeuronNode } from "./NeuronNode";
 import { Neuron } from "../../model/network/Neuron";
 import { Coordinate } from "../../utils/geom";
 import SelectionManager from "./SelectionManager";
+import { Synapse } from "../../model/network/Synapse";
+import SynapseNode from "./SynapseNode";
 
 export default class NetworkPanel {
 
@@ -22,6 +24,7 @@ export default class NetworkPanel {
 
   constructor(private network: Network) {
     network.events.on("neuronAdded", this.addNeuron.bind(this));
+    network.events.on("synapseAdded", this.addSynapse.bind(this));
 
     this.project.addLayer(this.layers.connections);
     this.project.addLayer(this.layers.nodes);
@@ -38,11 +41,24 @@ export default class NetworkPanel {
 
     paper.tool.on("keydown", (event: paper.KeyEvent) => {
       switch (event.key) {
-      case "p":
-        network.createNeuron({ coordinate: this.lastClickPosition });
-        break;
+        case "p":
+          network.createNeuron({ coordinate: this.lastClickPosition });
+          break;
+        case "1":
+          this.selectionManager.markSelectionAsSource();
+          break;
+        case "2":{
+          this.selectionManager.sourceNodes.forEach(s => {
+            this.selectionManager.selectedNodes.forEach(t => {
+              if (t instanceof NeuronNode) {
+                network.createSynapse({ source: s.neuron, target: t.neuron });
+              }
+            });
+          });
+        }
       }
     });
+
   }
 
   get preferredZoomLevel(): number {
@@ -76,4 +92,12 @@ export default class NetworkPanel {
       this.selectionManager.select([]);
     });
   }
+
+  private addSynapse(synapse: Synapse) {
+    const synapseNode = new SynapseNode(synapse);
+    this.layers.connections.addChild(synapseNode.node);
+    synapse.events.on("delete", () => synapseNode.node.remove());
+    console.log(this.network.synapses);
+  }
+
 }

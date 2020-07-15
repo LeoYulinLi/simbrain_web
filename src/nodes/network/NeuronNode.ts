@@ -13,14 +13,16 @@ export class NeuronNode extends ScreenElement {
 
   private nodeHandle = new paper.Shape.Rectangle(this.circle.bounds.size);
 
+  private sourceHandle = new paper.Shape.Rectangle(this.circle.bounds.size);
+
   readonly events = eventEmitter<{
     selected: NeuronNode
   }>()
 
-  constructor(private neuron: Neuron) {
+  constructor(readonly neuron: Neuron) {
     super();
     this.circle.strokeColor = new paper.Color("black");
-    this.circle.fillColor = new paper.Color("#ffffffaa");
+    this.circle.fillColor = new paper.Color("#ffffff");
 
     this.number.content = this.neuron.value.toPrecision(1);
     this.number.justification = "center";
@@ -33,6 +35,12 @@ export class NeuronNode extends ScreenElement {
     this.nodeHandle.bounds.center = this.circle.bounds.center;
     this.node.addChild(this.nodeHandle);
     this.nodeHandle.visible = false;
+
+    this.sourceHandle.scale(1.4);
+    this.sourceHandle.strokeColor = new paper.Color("red");
+    this.sourceHandle.bounds.center = this.circle.bounds.center;
+    this.node.addChild(this.sourceHandle);
+    this.sourceHandle.visible = false;
 
     neuron.events.on("value", value => {
       this.number.content = value.toPrecision(1);
@@ -47,13 +55,19 @@ export class NeuronNode extends ScreenElement {
 
   select(): void {
     this.nodeHandle.visible = true;
-    console.log(this.nodeHandle.bounds);
-    console.log(this.circle.bounds);
     this.events.fire("selected", this);
   }
 
   unselect(): void {
     this.nodeHandle.visible = false;
+  }
+
+  markAsSource(): void {
+    this.sourceHandle.visible = true;
+  }
+
+  removeSource(): void {
+    this.sourceHandle.visible = false;
   }
 
   get node(): paper.Group {
