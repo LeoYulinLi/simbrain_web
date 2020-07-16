@@ -7,6 +7,10 @@ export default class Network {
   private _neurons: Record<string, Neuron> = {};
   private _synapses: Record<string, Synapse> = {};
 
+  private config = {
+    allowSelfConnection: false
+  }
+
   readonly events = eventEmitter<{
     neuronAdded: Neuron,
     synapseAdded: Synapse
@@ -26,7 +30,7 @@ export default class Network {
     if (peek) peek(this);
   }
 
-  createNeuron(...options: ConstructorParameters<typeof Neuron>): Neuron {
+  createNeuron(...options: ConstructorParameters<typeof Neuron>): Neuron | null {
     const newNeuron = new Neuron(...options);
     const id = Math.random();
     this.neurons[id] = newNeuron;
@@ -37,8 +41,16 @@ export default class Network {
     return newNeuron;
   }
 
-  createSynapse(...options: ConstructorParameters<typeof Synapse>): Synapse {
-    const newSynapse = new Synapse(...options);
+  createSynapse(...[options]: ConstructorParameters<typeof Synapse>): Synapse | null {
+
+    if (!this.config.allowSelfConnection && options.source === options.target) return null;
+
+    // TODO: find better way than Array from
+    for (const synapse of Array.from(options.source.fanOuts)) {
+      if (synapse.target === options.target) return null;
+    }
+
+    const newSynapse = new Synapse(options);
     const id = Math.random();
     this.synapses[id] = newSynapse;
     newSynapse.events.on("delete", () => {

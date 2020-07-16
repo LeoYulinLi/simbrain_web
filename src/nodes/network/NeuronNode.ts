@@ -56,7 +56,7 @@ export class NeuronNode extends ScreenElement {
 
     this.node.on("mousedrag", (event: paper.MouseEvent) => {
       this.node.position = this.node.position.add(event.delta);
-      neuron.coordinate = event.point;
+      neuron.coordinate = this.node.position;
     });
 
     this.neuron.events.on("selected", () => this.select());

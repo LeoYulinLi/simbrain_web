@@ -100,11 +100,12 @@ export default class NetworkPanel {
     neuronNode.events.on("selected", () => {
       this.selectionManager.addSelection([neuronNode]);
     });
-    neuronNode.node.onMouseDown = () => neuronNode.node.bringToFront();
-    neuronNode.node.on("click", (event: paper.MouseEvent) => {
+    neuronNode.node.onMouseDown = (event: paper.MouseEvent) => {
       event.stopPropagation();
+      neuronNode.node.bringToFront();
       this.selectionManager.select([neuronNode]);
-    });
+    };
+    neuronNode.node.on("click", (event: paper.MouseEvent) => event.stopPropagation());
     this.project.view.on("click", () => {
       this.selectionManager.select([]);
     });

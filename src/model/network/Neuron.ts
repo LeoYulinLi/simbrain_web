@@ -18,7 +18,7 @@ export class Neuron implements LocatableModel, NetworkModel {
 
   private _value = 0;
 
-  fanOuts: Synapse[] = []
+  readonly fanOuts: Set<Synapse> = new Set();
 
   events = eventEmitter<{
     location: Coordinate,
