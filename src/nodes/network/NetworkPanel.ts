@@ -15,11 +15,23 @@ export default class NetworkPanel {
 
   private selectionManager = new SelectionManager();
 
+  private marqueeStart = { x: 0, y: 0 };
+
   private layers = {
     marquee: new paper.Layer(),
     nodes: new paper.Layer(),
     connections: new paper.Layer()
-  }
+  };
+
+  private selectionMarquee = new paper.Shape.Rectangle({
+    point: [0, 0],
+    size: [100, 100],
+    strokeColor: "#f5c542",
+    fillColor: "#f5c54222",
+    strokeScaling: false,
+    insert: false,
+    visible: false
+  });
 
   private keyBindings: {[key: string]: () => void} = {
     "p": () => this.network.createNeuron({ coordinate: this.lastClickPosition }),
@@ -64,12 +76,27 @@ export default class NetworkPanel {
     this.project.addLayer(this.layers.nodes);
     this.project.addLayer(this.layers.marquee);
 
-    paper.tool.onMouseUp = (event: paper.MouseEvent) => {
-      this.lastClickPosition = event.point;
+    this.layers.marquee.addChild(this.selectionMarquee);
+
+    paper.view.on("mousedown", (event: paper.MouseEvent) => {
+      this.marqueeStart = event.point.clone();
+      this.lastClickPosition = event.point.clone();
       this.autoZoom();
-    };
+    });
 
     paper.tool.on("keydown", (event: paper.KeyEvent) => this.keyBindings[event.key]?.());
+
+    paper.view.on("mousedrag", (event: paper.MouseEvent) => {
+      const tempRect = new paper.Rectangle(new paper.Point(this.marqueeStart), event.point.clone());
+      this.selectionMarquee.bounds.topLeft = tempRect.topLeft;
+      this.selectionMarquee.bounds.size = new paper.Size(tempRect.size);
+      this.selectionMarquee.visible = true;
+    });
+
+    paper.view.on("mouseup", () => {
+      this.selectionMarquee.visible = false;
+      this.autoZoom();
+    });
 
   }
 
@@ -106,6 +133,7 @@ export default class NetworkPanel {
       this.selectionManager.select([neuronNode]);
     };
     neuronNode.node.on("click", (event: paper.MouseEvent) => event.stopPropagation());
+    neuronNode.node.on("mousedrag", (event: paper.MouseEvent) => event.stopPropagation());
     this.project.view.on("click", () => {
       this.selectionManager.select([]);
     });

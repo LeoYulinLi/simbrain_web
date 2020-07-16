@@ -56,4 +56,8 @@ export default class SynapseNode extends ScreenElement {
     this.synapse.delete();
   }
 
+  intersects(selection: paper.Path.Rectangle): boolean {
+    return this.line.intersects(selection);
+  }
+
 }

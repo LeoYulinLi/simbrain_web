@@ -114,4 +114,9 @@ export class NeuronNode extends ScreenElement {
   delete(): void {
     this.neuron.delete();
   }
+
+  intersects(selection: paper.Path.Rectangle): boolean {
+    return this.circle.intersects(selection);
+  }
+
 }
