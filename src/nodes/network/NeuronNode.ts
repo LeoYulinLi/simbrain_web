@@ -5,22 +5,11 @@ import ScreenElement from "./ScreenElement";
 
 export class NeuronNode extends ScreenElement {
 
-  private number = new paper.PointText({
-    point: [0, 0],
-    insert: false
-  });
-
-  private circle = new paper.Shape.Circle({
-    point: [0, 0],
-    radius: 12,
-    insert: false
-  });
-
-  private _node = new paper.Group([this.circle, this.number]);
-
-  private nodeHandle = new paper.Shape.Rectangle(this.circle.bounds.size);
-
-  private sourceHandle = new paper.Shape.Rectangle(this.circle.bounds.size);
+  readonly node: paper.Group;
+  private readonly number: paper.PointText;
+  private readonly circle: paper.Shape.Circle;
+  private readonly nodeHandle: paper.Shape.Rectangle;
+  private readonly sourceHandle: paper.Shape.Rectangle;
 
   readonly events = eventEmitter<{
     selected: any
@@ -28,24 +17,46 @@ export class NeuronNode extends ScreenElement {
 
   constructor(readonly neuron: Neuron) {
     super();
-    this.circle.strokeColor = new paper.Color("black");
-    this.circle.fillColor = new paper.Color("#ffffff");
 
-    this.number.content = this.neuron.value.toPrecision(1);
-    this.number.justification = "center";
-    this.number.fontSize = 11;
-    this.number.fontFamily = "Arial";
+    this.node = new paper.Group();
+
+    this.circle = new paper.Shape.Circle({
+      point: [0, 0],
+      radius: 12,
+      strokeColor: "black",
+      fillColor: "#ffffff",
+      insert: false
+    });
+    this.node.addChild(this.circle);
+
+    this.number = new paper.PointText({
+      point: [0, 0],
+      insert: false,
+      content: this.neuron.value.toPrecision(1),
+      justification: "center",
+      fontSize: 11,
+      fontFamily: "Arial"
+    });
     this.number.translate(new paper.Point(0, - this.number.position.y));
+    this.node.addChild(this.number);
 
+    this.nodeHandle = new paper.Shape.Rectangle({
+      size: this.circle.bounds.size,
+      strokeColor: "green",
+      position: this.circle.bounds.center,
+      insert: false
+    });
     this.nodeHandle.scale(1.2);
-    this.nodeHandle.strokeColor = new paper.Color("green");
-    this.nodeHandle.bounds.center = this.circle.bounds.center;
     this.node.addChild(this.nodeHandle);
     this.nodeHandle.visible = false;
 
+    this.sourceHandle = new paper.Shape.Rectangle({
+      size: this.circle.bounds.size,
+      strokeColor: "red",
+      position: this.circle.bounds.center,
+      insert: false
+    });
     this.sourceHandle.scale(1.4);
-    this.sourceHandle.strokeColor = new paper.Color("red");
-    this.sourceHandle.bounds.center = this.circle.bounds.center;
     this.node.addChild(this.sourceHandle);
     this.sourceHandle.visible = false;
 
@@ -94,10 +105,6 @@ export class NeuronNode extends ScreenElement {
     this.neuron.value -= 0.1;
   }
 
-  get node(): paper.Group {
-    return this._node;
-  }
-
   private get activationColor(): paper.Color {
     const { value, updateRule: { graphicalUpperBound, graphicalLowerBound, graphicalNeutral } } = this.neuron;
     if (value > graphicalNeutral) {
@@ -119,8 +126,8 @@ export class NeuronNode extends ScreenElement {
     this.neuron.delete();
   }
 
-  intersects(selection: paper.Path.Rectangle): boolean {
-    return this.circle.intersects(selection);
+  intersects(selection: paper.Shape.Rectangle): boolean {
+    return this.circle.intersects(selection) || this.circle.isInside(selection.bounds);
   }
 
 }
