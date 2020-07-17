@@ -61,7 +61,7 @@ export class NeuronNode extends ScreenElement {
 
     this.node.on("mousedown", this.select.bind(this));
 
-    this.neuron.events.on("selected", () => this.select());
+    this.neuron.events.on("selected", (tag) => this.select(tag));
 
     this.node.on("select", this.select.bind(this));
 

@@ -24,7 +24,7 @@ export class Neuron implements LocatableModel, NetworkModel {
     location: Coordinate,
     delete: Neuron,
     value: number,
-    selected: Neuron,
+    selected: any,
   }>();
 
   constructor(options?: Pick<Partial<Neuron>, 'updateRule' | 'coordinate' | 'clamped' | 'value'>) {
@@ -49,8 +49,8 @@ export class Neuron implements LocatableModel, NetworkModel {
     this.events.fire("delete", this);
   }
 
-  select(): void {
-    this.events.fire("selected", this);
+  select(tag?: any): void {
+    this.events.fire("selected", tag);
   }
 
   get coordinate(): Coordinate {

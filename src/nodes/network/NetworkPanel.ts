@@ -62,7 +62,7 @@ export default class NetworkPanel {
       });
     },
     "space": () => this.network.update(),
-    "n": () => Object.values(this.network.neurons).forEach(neuron => neuron.select()),
+    "n": () => Object.values(this.network.neurons).forEach(neuron => neuron.select("n")),
     "delete": () => this.selectionManager.selectedNodes.forEach(n => n.delete()),
     "d": () => {
       console.log(this.network.neurons);

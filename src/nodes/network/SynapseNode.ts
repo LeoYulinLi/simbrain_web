@@ -17,7 +17,7 @@ export default class SynapseNode extends ScreenElement {
   constructor(private synapse: Synapse) {
     super();
     this.line.strokeWidth = 1;
-    this.line.strokeColor = new paper.Color("black");
+    this.line.strokeColor = new paper.Color("#00000033");
     this.line.closed = true;
     this.node.addChild(this.line);
     this.node.addChild(this.indicator);
@@ -42,6 +42,13 @@ export default class SynapseNode extends ScreenElement {
     const indicatorColor = new paper.Color(this.synapse.weight > 0 ? "red" : "blue");
     this.indicator.radius = indicatorSize;
     this.indicator.fillColor = indicatorColor;
+
+    const lineColor = new paper.Color(this.synapse.weight > 0 ? "red" : "blue");
+    lineColor.brightness = 1;
+    lineColor.alpha = 0.1 + Math.abs(this.synapse.weight / 15);
+    const strokeWidth = 0.7 + Math.abs(this.synapse.weight / 4);
+    this.line.strokeColor = lineColor;
+    this.line.strokeWidth = strokeWidth;
   }
 
   select(): void {
