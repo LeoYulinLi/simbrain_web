@@ -90,11 +90,11 @@ export default class NetworkPanel {
 
     paper.view.on("mousedrag", (event: paper.MouseEvent) => {
       const tempRect = new paper.Rectangle(new paper.Point(this.marqueeStart), event.point.clone());
+      this.selectionMarquee.size = new paper.Size(tempRect.size);
       this.selectionMarquee.bounds.topLeft = tempRect.topLeft;
-      this.selectionMarquee.bounds.size = new paper.Size(tempRect.size);
       this.selectionMarquee.visible = true;
       this.layers.nodes.children.filter(i => {
-        if (i.intersects(this.selectionMarquee) || i.isInside(this.selectionMarquee.bounds)) {
+        if (i.intersects(this.selectionMarquee) || i.isInside(tempRect)) {
           i.emit("select", event);
         }
       });

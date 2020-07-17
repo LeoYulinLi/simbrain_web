@@ -1,6 +1,7 @@
 import paper from "paper";
 import ScreenElement from "./ScreenElement";
 import { NeuronNode } from "./NeuronNode";
+import difference from "lodash.difference";
 
 
 export default class SelectionManager {
@@ -26,10 +27,9 @@ export default class SelectionManager {
   }
 
   select(screenElements: ScreenElement[], tagObject?: any): void {
-    console.log(tagObject !== this.tagObject);
     if (!this.multiSelect && (!this.tagObject || tagObject !== this.tagObject)) {
       this.tagObject = tagObject;
-      this.selectedNodes.forEach(e => e.unselect());
+      difference(Array.from(this.selectedNodes), screenElements).forEach(e => e.unselect());
       this.selectedNodes.clear();
     }
     screenElements.forEach(e => this.selectedNodes.add(e));
