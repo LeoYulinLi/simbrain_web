@@ -10,6 +10,12 @@ export default class SynapseNode extends ScreenElement {
     center: [0, 0],
     radius: 3,
     fillColor: "red",
+    insert: false
+  });
+
+  private nodeHandle = new paper.Shape.Rectangle({
+    size: this.indicator.bounds.size,
+    insert: false
   });
 
   readonly node = new paper.Group();
@@ -21,6 +27,13 @@ export default class SynapseNode extends ScreenElement {
     this.line.closed = true;
     this.node.addChild(this.line);
     this.node.addChild(this.indicator);
+
+    this.nodeHandle.scale(1.4);
+    this.nodeHandle.strokeColor = new paper.Color("green");
+    this.nodeHandle.bounds.center = this.indicator.bounds.center;
+    this.node.addChild(this.nodeHandle);
+    this.nodeHandle.visible = false;
+
     this.repaint();
     synapse.events.on("location", () => {
       this.repaint();
@@ -52,18 +65,18 @@ export default class SynapseNode extends ScreenElement {
   }
 
   select(): void {
-    console.log("selected");
+    this.nodeHandle.visible = true;
   }
 
   unselect(): void {
-    console.log("unselected");
+    this.nodeHandle.visible = false;
   }
 
   delete(): void {
     this.synapse.delete();
   }
 
-  intersects(selection: paper.Path.Rectangle): boolean {
+  intersects(selection: paper.Shape.Rectangle): boolean {
     return this.line.intersects(selection);
   }
 

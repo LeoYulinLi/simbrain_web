@@ -6,10 +6,13 @@ import { Coordinate } from "../../utils/geom";
 import SelectionManager from "./SelectionManager";
 import { Synapse } from "../../model/network/Synapse";
 import SynapseNode from "./SynapseNode";
+import ScreenElement from "./ScreenElement";
 
 export default class NetworkPanel {
 
   private project = paper.project;
+
+  private screenElements: ScreenElement[] = [];
 
   private lastClickPosition: Coordinate = { x: 0, y: 0 };
 
@@ -32,8 +35,6 @@ export default class NetworkPanel {
     insert: false,
     visible: false
   });
-
-  private tag = null;
 
   private keyBindings: {[key: string]: () => void} = {
     "p": () => this.network.createNeuron({ coordinate: this.lastClickPosition }),
@@ -91,13 +92,10 @@ export default class NetworkPanel {
     paper.view.on("mousedrag", (event: paper.MouseEvent) => {
       const tempRect = new paper.Rectangle(new paper.Point(this.marqueeStart), event.point.clone());
       this.selectionMarquee.size = new paper.Size(tempRect.size);
-      this.selectionMarquee.bounds.topLeft = tempRect.topLeft;
+      this.selectionMarquee.position = tempRect.center;
       this.selectionMarquee.visible = true;
-      this.layers.nodes.children.filter(i => {
-        if (i.intersects(this.selectionMarquee) || i.isInside(tempRect)) {
-          i.emit("select", event);
-        }
-      });
+      const result = this.screenElements.filter(element => element.intersects(this.selectionMarquee));
+      result.forEach(e => e.select(event));
     });
 
     paper.view.on("mouseup", () => {
@@ -122,6 +120,7 @@ export default class NetworkPanel {
 
   private addNeuron(neuron: Neuron) {
     const neuronNode = new NeuronNode(neuron);
+    this.screenElements.push(neuronNode);
     this.layers.nodes.addChild(neuronNode.node);
     this.autoZoom();
     neuron.events.on("delete", () => {
@@ -147,6 +146,7 @@ export default class NetworkPanel {
 
   private addSynapse(synapse: Synapse) {
     const synapseNode = new SynapseNode(synapse);
+    this.screenElements.push(synapseNode);
     this.layers.connections.addChild(synapseNode.node);
     synapse.events.on("delete", () => synapseNode.node.remove());
   }
