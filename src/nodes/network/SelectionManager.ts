@@ -11,9 +11,9 @@ export default class SelectionManager {
 
   private multiSelect = false;
 
-  constructor() {
+  private tagObject: any = null;
 
-    console.log(paper.tools);
+  constructor() {
 
     paper.tool.on("keydown", (event: paper.KeyEvent) => {
       if (event.key === "shift") this.multiSelect = true;
@@ -25,12 +25,13 @@ export default class SelectionManager {
 
   }
 
-  select(screenElements: ScreenElement[]): void {
-    if (!this.multiSelect) {
+  select(screenElements: ScreenElement[], tagObject?: any): void {
+    console.log(tagObject !== this.tagObject);
+    if (!this.multiSelect && (!this.tagObject || tagObject !== this.tagObject)) {
+      this.tagObject = tagObject;
       this.selectedNodes.forEach(e => e.unselect());
       this.selectedNodes.clear();
     }
-    screenElements.forEach(e => e.select());
     screenElements.forEach(e => this.selectedNodes.add(e));
   }
 

@@ -23,7 +23,7 @@ export class NeuronNode extends ScreenElement {
   private sourceHandle = new paper.Shape.Rectangle(this.circle.bounds.size);
 
   readonly events = eventEmitter<{
-    selected: NeuronNode
+    selected: any
   }>()
 
   constructor(readonly neuron: Neuron) {
@@ -59,15 +59,19 @@ export class NeuronNode extends ScreenElement {
       neuron.coordinate = this.node.position;
     });
 
+    this.node.on("mousedown", this.select.bind(this));
+
     this.neuron.events.on("selected", () => this.select());
+
+    this.node.on("select", this.select.bind(this));
 
     this.node.position = new paper.Point(neuron.coordinate);
     this.node.on("hi", (obj: string[]) => console.log(JSON.stringify(obj)));
   }
 
-  select(): void {
+  select(event?: any): void {
     this.nodeHandle.visible = true;
-    this.events.fire("selected", this);
+    this.events.fire("selected", event);
   }
 
   unselect(): void {

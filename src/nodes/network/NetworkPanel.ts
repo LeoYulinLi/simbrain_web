@@ -33,6 +33,8 @@ export default class NetworkPanel {
     visible: false
   });
 
+  private tag = null;
+
   private keyBindings: {[key: string]: () => void} = {
     "p": () => this.network.createNeuron({ coordinate: this.lastClickPosition }),
     "1": () => this.selectionManager.markSelectionAsSource(),
@@ -91,6 +93,11 @@ export default class NetworkPanel {
       this.selectionMarquee.bounds.topLeft = tempRect.topLeft;
       this.selectionMarquee.bounds.size = new paper.Size(tempRect.size);
       this.selectionMarquee.visible = true;
+      this.layers.nodes.children.filter(i => {
+        if (i.intersects(this.selectionMarquee) || i.isInside(this.selectionMarquee.bounds)) {
+          i.emit("select", event);
+        }
+      });
     });
 
     paper.view.on("mouseup", () => {
@@ -124,13 +131,12 @@ export default class NetworkPanel {
       const { x, y } = location;
       neuronNode.node.position = new paper.Point(x, y);
     });
-    neuronNode.events.on("selected", () => {
-      this.selectionManager.addSelection([neuronNode]);
+    neuronNode.events.on("selected", (event) => {
+      this.selectionManager.select([neuronNode], event);
     });
     neuronNode.node.onMouseDown = (event: paper.MouseEvent) => {
       event.stopPropagation();
       neuronNode.node.bringToFront();
-      this.selectionManager.select([neuronNode]);
     };
     neuronNode.node.on("click", (event: paper.MouseEvent) => event.stopPropagation());
     neuronNode.node.on("mousedrag", (event: paper.MouseEvent) => event.stopPropagation());
