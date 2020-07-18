@@ -1,6 +1,7 @@
 import ScreenElement from "./ScreenElement";
 import { Synapse } from "../../model/network/Synapse";
 import paper from "paper";
+import eventEmitter from "../../events/emitter";
 
 export default class SynapseNode extends ScreenElement {
 
@@ -13,12 +14,18 @@ export default class SynapseNode extends ScreenElement {
     insert: false
   });
 
+  readonly events = eventEmitter<{
+    selected: any
+  }>()
+
   private nodeHandle = new paper.Shape.Rectangle({
     size: this.indicator.bounds.size,
     insert: false
   });
 
   readonly node = new paper.Group();
+
+  private selected = false;
 
   constructor(private synapse: Synapse) {
     super();
@@ -28,11 +35,16 @@ export default class SynapseNode extends ScreenElement {
     this.node.addChild(this.line);
     this.node.addChild(this.indicator);
 
+    this.indicator.on("click", (event: paper.MouseEvent) => {
+      console.log("here");
+      this.select();
+    });
+
     this.nodeHandle.scale(1.4);
     this.nodeHandle.strokeColor = new paper.Color("green");
     this.nodeHandle.bounds.center = this.indicator.bounds.center;
-    this.node.addChild(this.nodeHandle);
-    this.nodeHandle.visible = false;
+    this.nodeHandle.size = new paper.Size(this.indicator.bounds);
+    this.indicator.addChild(this.nodeHandle);
 
     this.repaint();
     synapse.events.on("location", () => {
@@ -58,17 +70,25 @@ export default class SynapseNode extends ScreenElement {
 
     const lineColor = new paper.Color(this.synapse.weight > 0 ? "red" : "blue");
     lineColor.brightness = 1;
-    lineColor.alpha = 0.1 + Math.abs(this.synapse.weight / 15);
+    lineColor.alpha = this.selected ? 1 : 0.1 + Math.abs(this.synapse.weight / 15);
     const strokeWidth = 0.7 + Math.abs(this.synapse.weight / 4);
     this.line.strokeColor = lineColor;
     this.line.strokeWidth = strokeWidth;
   }
 
-  select(): void {
+  select(event?: any): void {
+    if (this.selected) return;
     this.nodeHandle.visible = true;
+    this.selected = true;
+    this.repaint();
+    this.events.fire("selected", event);
   }
 
   unselect(): void {
+    if (!this.selected) return;
+    console.log("unselect");
+    this.selected = false;
+    this.repaint();
     this.nodeHandle.visible = false;
   }
 
@@ -77,7 +97,7 @@ export default class SynapseNode extends ScreenElement {
   }
 
   intersects(selection: paper.Shape.Rectangle): boolean {
-    return this.line.intersects(selection);
+    return this.line.intersects(selection) || this.indicator.isInside(selection.bounds);
   }
 
 }

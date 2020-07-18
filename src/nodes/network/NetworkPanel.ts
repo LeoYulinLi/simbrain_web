@@ -12,7 +12,7 @@ export default class NetworkPanel {
 
   private project = paper.project;
 
-  private screenElements: ScreenElement[] = [];
+  private screenElements: Set<ScreenElement> = new Set();
 
   private lastClickPosition: Coordinate = { x: 0, y: 0 };
 
@@ -94,7 +94,7 @@ export default class NetworkPanel {
       this.selectionMarquee.size = new paper.Size(tempRect.size);
       this.selectionMarquee.position = tempRect.center;
       this.selectionMarquee.visible = true;
-      const result = this.screenElements.filter(element => element.intersects(this.selectionMarquee));
+      const result = Array.from(this.screenElements).filter(element => element.intersects(this.selectionMarquee));
       result.forEach(e => e.select(event));
     });
 
@@ -120,10 +120,11 @@ export default class NetworkPanel {
 
   private addNeuron(neuron: Neuron) {
     const neuronNode = new NeuronNode(neuron);
-    this.screenElements.push(neuronNode);
+    this.screenElements.add(neuronNode);
     this.layers.nodes.addChild(neuronNode.node);
     this.autoZoom();
     neuron.events.on("delete", () => {
+      this.screenElements.delete(neuronNode);
       neuronNode.node.remove();
     });
     neuron.events.on("location", location => {
@@ -146,9 +147,15 @@ export default class NetworkPanel {
 
   private addSynapse(synapse: Synapse) {
     const synapseNode = new SynapseNode(synapse);
-    this.screenElements.push(synapseNode);
+    this.screenElements.add(synapseNode);
     this.layers.connections.addChild(synapseNode.node);
-    synapse.events.on("delete", () => synapseNode.node.remove());
+    synapseNode.events.on("selected", (event) => {
+      this.selectionManager.select([synapseNode], event);
+    });
+    synapse.events.on("delete", () => {
+      this.screenElements.delete(synapseNode);
+      synapseNode.node.remove();
+    });
   }
 
   private autoZoom() {
