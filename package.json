@@ -8,6 +8,7 @@
   "dependencies": {
     "lodash.clamp": "^4.0.3",
     "lodash.difference": "^4.5.0",
+    "lodash.inrange": "^3.3.6",
     "paper": "^0.12.11"
   },
   "scripts": {
@@ -17,6 +18,7 @@
   "devDependencies": {
     "@types/lodash.clamp": "^4.0.6",
     "@types/lodash.difference": "^4.5.6",
+    "@types/lodash.inrange": "^3.3.6",
     "@types/mini-css-extract-plugin": "^0.9.1",
     "@types/node": "^14.0.22",
     "@types/webpack": "^4.41.21",

@@ -3,6 +3,7 @@ import { Synapse } from "../../model/network/Synapse";
 import paper from "paper";
 import eventEmitter from "../../events/emitter";
 import clamp from "lodash.clamp";
+import inrange from "lodash.inrange";
 
 export default class SynapseNode extends ScreenElement {
 
@@ -63,22 +64,30 @@ export default class SynapseNode extends ScreenElement {
     this.line.add(source.add(radiusOffset), target.subtract(radiusOffset));
     this.indicator.position = target.subtract(radiusOffset);
 
-    const indicatorSize = clamp(Math.abs(this.synapse.weight / 3) + 2, 2.0, 5.0);
-    const indicatorColor = new paper.Color(this.synapse.weight > 0 ? "red" : "blue");
-    this.indicator.radius = indicatorSize;
-    this.indicator.fillColor = indicatorColor;
+    this.indicator.radius = clamp(Math.abs(this.synapse.weight / 3) + 2, 2.0, 5.0);
+
+    if (inrange(this.synapse.weight, -0.05, 0.05)) {
+      const lineColor = new paper.Color("black");
+      lineColor.brightness = 0.5;
+      lineColor.alpha = clamp(Math.abs(this.synapse.weight / 8) + 0.1, 0.1, 0.7) * (this.selected ? 1.5 : 1);
+      this.line.strokeColor = lineColor;
+
+      this.indicator.fillColor = new paper.Color("#999999");
+    } else {
+      const lineColor = new paper.Color(this.synapse.weight > 0 ? "red" : "blue");
+      lineColor.brightness = 1;
+      lineColor.alpha = clamp(Math.abs(this.synapse.weight / 8) + 0.1, 0.1, 0.7) * (this.selected ? 1.5 : 1);
+      this.line.strokeColor = lineColor;
+
+      this.indicator.fillColor = new paper.Color(this.synapse.weight > 0 ? "red" : "blue");
+    }
 
     this.nodeHandle.strokeColor = new paper.Color("green");
     this.nodeHandle.position = this.indicator.bounds.center;
     this.nodeHandle.size = this.indicator.size.multiply(1.4);
     this.node.addChild(this.nodeHandle);
 
-    const lineColor = new paper.Color(this.synapse.weight > 0 ? "red" : "blue");
-    lineColor.brightness = 1;
-    lineColor.alpha = this.selected ? 1 : clamp(Math.abs(this.synapse.weight / 8) + 0.1, 0.1, 0.7);
-    const strokeWidth = clamp(Math.abs(this.synapse.weight / 4) + 0.5, 0.5, 2.5);
-    this.line.strokeColor = lineColor;
-    this.line.strokeWidth = strokeWidth;
+    this.line.strokeWidth = clamp(Math.abs(this.synapse.weight / 4) + 0.5, 0.5, 2.5);
   }
 
   select(tag?: any): void {
@@ -88,6 +97,8 @@ export default class SynapseNode extends ScreenElement {
     this.repaint();
     this.events.fire("selected", tag);
   }
+
+
 
   unselect(): void {
     if (!this.selected) return;
