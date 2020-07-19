@@ -80,9 +80,9 @@ export class NeuronNode extends ScreenElement {
     this.node.on("hi", (obj: string[]) => console.log(JSON.stringify(obj)));
   }
 
-  select(event?: any): void {
+  select(tag?: any): void {
     this.nodeHandle.visible = true;
-    this.events.fire("selected", event);
+    this.events.fire("selected", tag);
   }
 
   unselect(): void {

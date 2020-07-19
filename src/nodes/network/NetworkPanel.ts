@@ -143,6 +143,7 @@ export default class NetworkPanel {
     this.project.view.on("click", () => {
       this.selectionManager.select([]);
     });
+    neuronNode.select();
   }
 
   private addSynapse(synapse: Synapse) {
