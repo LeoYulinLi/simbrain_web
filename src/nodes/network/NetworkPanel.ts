@@ -81,13 +81,13 @@ export default class NetworkPanel {
 
     this.layers.marquee.addChild(this.selectionMarquee);
 
+    paper.tool.on("keydown", (event: paper.KeyEvent) => this.keyBindings[event.key]?.());
+
     paper.view.on("mousedown", (event: paper.MouseEvent) => {
       this.marqueeStart = event.point.clone();
       this.lastClickPosition = event.point.clone();
       this.autoZoom();
     });
-
-    paper.tool.on("keydown", (event: paper.KeyEvent) => this.keyBindings[event.key]?.());
 
     paper.view.on("mousedrag", (event: paper.MouseEvent) => {
       const tempRect = new paper.Rectangle(new paper.Point(this.marqueeStart), event.point.clone());
@@ -119,10 +119,11 @@ export default class NetworkPanel {
   }
 
   private addNeuron(neuron: Neuron) {
+
     const neuronNode = new NeuronNode(neuron);
     this.screenElements.add(neuronNode);
     this.layers.nodes.addChild(neuronNode.node);
-    this.autoZoom();
+
     neuron.events.on("delete", () => {
       this.screenElements.delete(neuronNode);
       neuronNode.node.remove();
@@ -131,19 +132,24 @@ export default class NetworkPanel {
       const { x, y } = location;
       neuronNode.node.position = new paper.Point(x, y);
     });
+
     neuronNode.events.on("selected", (event) => {
       this.selectionManager.select([neuronNode], event);
     });
+
+    neuronNode.node.on("mousedrag", (event: paper.MouseEvent) => event.stopPropagation());
+    neuronNode.node.on("click", (event: paper.MouseEvent) => event.stopPropagation());
     neuronNode.node.onMouseDown = (event: paper.MouseEvent) => {
       event.stopPropagation();
       neuronNode.node.bringToFront();
     };
-    neuronNode.node.on("click", (event: paper.MouseEvent) => event.stopPropagation());
-    neuronNode.node.on("mousedrag", (event: paper.MouseEvent) => event.stopPropagation());
+
     this.project.view.on("click", () => {
       this.selectionManager.select([]);
     });
+
     neuronNode.select();
+    this.autoZoom();
   }
 
   private addSynapse(synapse: Synapse) {
