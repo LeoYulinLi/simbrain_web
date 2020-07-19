@@ -5,12 +5,17 @@ import eventEmitter from "../../events/emitter";
 
 export default class SynapseNode extends ScreenElement {
 
-  private line = new paper.Path({ insert: false });
+  private line = new paper.Path({
+    strokeWidth: 1,
+    strokeColor: "#00000033",
+    insert: false
+  });
 
   private indicator = new paper.Shape.Circle({
     center: [0, 0],
     radius: 3,
     fillColor: "red",
+    closed: true,
     insert: false
   });
 
@@ -20,7 +25,8 @@ export default class SynapseNode extends ScreenElement {
 
   private nodeHandle = new paper.Shape.Rectangle({
     size: this.indicator.bounds.size,
-    insert: false
+    insert: false,
+    visible: false
   });
 
   readonly node = new paper.Group();
@@ -29,9 +35,6 @@ export default class SynapseNode extends ScreenElement {
 
   constructor(private synapse: Synapse) {
     super();
-    this.line.strokeWidth = 1;
-    this.line.strokeColor = new paper.Color("#00000033");
-    this.line.closed = true;
     this.node.addChild(this.line);
     this.node.addChild(this.indicator);
 
@@ -87,8 +90,8 @@ export default class SynapseNode extends ScreenElement {
     if (!this.selected) return;
     console.log("unselect");
     this.selected = false;
-    this.repaint();
     this.nodeHandle.visible = false;
+    this.repaint();
   }
 
   delete(): void {
