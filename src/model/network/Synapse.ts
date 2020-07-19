@@ -8,9 +8,10 @@ export class Synapse implements NetworkModel {
 
   target!: Neuron;
 
-  weight = 1;
+  private _weight = 1;
 
   events =  eventEmitter<{
+    updated: Synapse,
     delete: Synapse,
     location: Synapse,
   }>();
@@ -28,12 +29,30 @@ export class Synapse implements NetworkModel {
   }
 
   update() {
-    this.target.bufferedValue += this.source.value * this.weight;
+    this.target.bufferedValue += this.source.value * this._weight;
   }
 
   delete(): void {
     this.source.fanOuts.delete(this);
     this.events.fire("delete", this);
+  }
+
+
+  get weight(): number {
+    return this._weight;
+  }
+
+  set weight(value: number) {
+    this._weight = value;
+    this.events.fire("updated", this);
+  }
+
+  increaseWeight(): void {
+    this.weight += 0.1;
+  }
+
+  decreaseWeight(): void {
+    this.weight -= 0.1;
   }
 
 }

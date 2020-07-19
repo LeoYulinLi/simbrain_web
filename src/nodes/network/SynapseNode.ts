@@ -2,6 +2,7 @@ import ScreenElement from "./ScreenElement";
 import { Synapse } from "../../model/network/Synapse";
 import paper from "paper";
 import eventEmitter from "../../events/emitter";
+import clamp from "lodash.clamp";
 
 export default class SynapseNode extends ScreenElement {
 
@@ -33,7 +34,7 @@ export default class SynapseNode extends ScreenElement {
 
   private selected = false;
 
-  constructor(private synapse: Synapse) {
+  constructor(readonly synapse: Synapse) {
     super();
     this.node.addChild(this.line);
     this.node.addChild(this.indicator);
@@ -47,6 +48,8 @@ export default class SynapseNode extends ScreenElement {
     synapse.events.on("location", () => {
       this.repaint();
     });
+
+    this.synapse.events.on("updated", this.repaint.bind(this));
   }
 
   repaint(): void {
@@ -60,7 +63,7 @@ export default class SynapseNode extends ScreenElement {
     this.line.add(source.add(radiusOffset), target.subtract(radiusOffset));
     this.indicator.position = target.subtract(radiusOffset);
 
-    const indicatorSize = this.synapse.weight / 10 * 5 + 3;
+    const indicatorSize = clamp(Math.abs(this.synapse.weight / 3) + 2, 2.0, 5.0);
     const indicatorColor = new paper.Color(this.synapse.weight > 0 ? "red" : "blue");
     this.indicator.radius = indicatorSize;
     this.indicator.fillColor = indicatorColor;
@@ -72,18 +75,18 @@ export default class SynapseNode extends ScreenElement {
 
     const lineColor = new paper.Color(this.synapse.weight > 0 ? "red" : "blue");
     lineColor.brightness = 1;
-    lineColor.alpha = this.selected ? 1 : 0.1 + Math.abs(this.synapse.weight / 15);
-    const strokeWidth = 0.7 + Math.abs(this.synapse.weight / 4);
+    lineColor.alpha = this.selected ? 1 : clamp(Math.abs(this.synapse.weight / 8) + 0.1, 0.1, 0.7);
+    const strokeWidth = clamp(Math.abs(this.synapse.weight / 4) + 0.5, 0.5, 2.5);
     this.line.strokeColor = lineColor;
     this.line.strokeWidth = strokeWidth;
   }
 
-  select(event?: any): void {
+  select(tag?: any): void {
     if (this.selected) return;
     this.nodeHandle.visible = true;
     this.selected = true;
     this.repaint();
-    this.events.fire("selected", event);
+    this.events.fire("selected", tag);
   }
 
   unselect(): void {

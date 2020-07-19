@@ -43,15 +43,19 @@ export default class NetworkPanel {
       this.selectionManager.sourceNodes.forEach(s => {
         this.selectionManager.selectedNodes.forEach(t => {
           if (t instanceof NeuronNode) {
-            this.network.createSynapse({ source: s.neuron, target: t.neuron, weight: Math.random() * 5 - 2 });
+            this.network.createSynapse({ source: s.neuron, target: t.neuron, weight: 1 });
           }
         });
       });
     },
     "up": () => {
-      this.selectionManager.selectedNodes.forEach(t => {
-        if (t instanceof NeuronNode) {
-          t.increaseActivation();
+      this.selectionManager.selectedNodes.forEach(node => {
+        console.log(node);
+        if (node instanceof NeuronNode) {
+          node.increaseActivation();
+        }
+        if (node instanceof SynapseNode) {
+          node.synapse.increaseWeight();
         }
       });
     },
@@ -59,6 +63,9 @@ export default class NetworkPanel {
       this.selectionManager.selectedNodes.forEach(node => {
         if (node instanceof NeuronNode) {
           node.decreaseActivation();
+        }
+        if (node instanceof SynapseNode) {
+          node.synapse.decreaseWeight();
         }
       });
     },
