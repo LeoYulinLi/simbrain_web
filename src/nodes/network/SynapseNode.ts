@@ -40,12 +40,6 @@ export default class SynapseNode extends ScreenElement {
       this.select();
     });
 
-    this.nodeHandle.scale(1.4);
-    this.nodeHandle.strokeColor = new paper.Color("green");
-    this.nodeHandle.bounds.center = this.indicator.bounds.center;
-    this.nodeHandle.size = new paper.Size(this.indicator.bounds);
-    this.indicator.addChild(this.nodeHandle);
-
     this.repaint();
     synapse.events.on("location", () => {
       this.repaint();
@@ -67,6 +61,11 @@ export default class SynapseNode extends ScreenElement {
     const indicatorColor = new paper.Color(this.synapse.weight > 0 ? "red" : "blue");
     this.indicator.radius = indicatorSize;
     this.indicator.fillColor = indicatorColor;
+
+    this.nodeHandle.strokeColor = new paper.Color("green");
+    this.nodeHandle.position = this.indicator.bounds.center;
+    this.nodeHandle.size = this.indicator.size.multiply(1.4);
+    this.node.addChild(this.nodeHandle);
 
     const lineColor = new paper.Color(this.synapse.weight > 0 ? "red" : "blue");
     lineColor.brightness = 1;
