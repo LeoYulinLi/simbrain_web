@@ -77,7 +77,6 @@ export class NeuronNode extends ScreenElement {
     this.node.on("select", this.select.bind(this));
 
     this.node.position = new paper.Point(neuron.coordinate);
-    this.node.on("hi", (obj: string[]) => console.log(JSON.stringify(obj)));
   }
 
   select(tag?: any): void {

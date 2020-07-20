@@ -41,7 +41,6 @@ export default class SynapseNode extends ScreenElement {
     this.node.addChild(this.indicator);
 
     this.indicator.on("click", (event: paper.MouseEvent) => {
-      console.log("here");
       this.select();
     });
 

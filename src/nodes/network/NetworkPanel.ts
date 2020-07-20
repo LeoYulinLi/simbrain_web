@@ -51,7 +51,6 @@ export default class NetworkPanel {
     "up": (event) => {
       event.preventDefault();
       this.selectionManager.selectedNodes.forEach(node => {
-        console.log(node);
         if (node instanceof NeuronNode) {
           node.increaseActivation();
         }
