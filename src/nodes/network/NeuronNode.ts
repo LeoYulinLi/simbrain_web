@@ -24,7 +24,7 @@ export class NeuronNode extends ScreenElement {
       point: [0, 0],
       radius: 12,
       strokeColor: "black",
-      fillColor: "#ffffff",
+      fillColor: this.activationColor,
       insert: false
     });
     this.node.addChild(this.circle);

@@ -8,7 +8,7 @@ A very basic web version of [Simbrain](http://simbrain.net/).
 - Connecting neurons with a synapse 
   [using the 1, 2 trick](http://simbrain.net/Documentation/docs/Pages/Network/connections.html#quick12)
   and the [all-to-all connection strategy](http://simbrain.net/Documentation/docs/Pages/Network/connections/alltoall.html)
-  with self-connection disabled. Synapse weights are randomized and cannot be adjusted for now.
+  with self-connection disabled.
 - Auto zoom
 - Delete screen elements
 - Select screen elements

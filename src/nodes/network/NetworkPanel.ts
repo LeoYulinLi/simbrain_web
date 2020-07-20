@@ -36,7 +36,7 @@ export default class NetworkPanel {
     visible: false
   });
 
-  private keyBindings: {[key: string]: () => void} = {
+  private keyBindings: {[key: string]: (event: paper.KeyEvent) => void} = {
     "p": () => this.network.createNeuron({ coordinate: this.lastClickPosition }),
     "1": () => this.selectionManager.markSelectionAsSource(),
     "2": () => {
@@ -48,7 +48,8 @@ export default class NetworkPanel {
         });
       });
     },
-    "up": () => {
+    "up": (event) => {
+      event.preventDefault();
       this.selectionManager.selectedNodes.forEach(node => {
         console.log(node);
         if (node instanceof NeuronNode) {
@@ -59,7 +60,8 @@ export default class NetworkPanel {
         }
       });
     },
-    "down": () => {
+    "down": (event) => {
+      event.preventDefault();
       this.selectionManager.selectedNodes.forEach(node => {
         if (node instanceof NeuronNode) {
           node.decreaseActivation();
@@ -69,7 +71,10 @@ export default class NetworkPanel {
         }
       });
     },
-    "space": () => this.network.update(),
+    "space": (event) => {
+      event.preventDefault();
+      this.network.update();
+    },
     "n": () => Object.values(this.network.neurons).forEach(neuron => neuron.select("n")),
     "delete": () => this.selectionManager.selectedNodes.forEach(n => n.delete()),
     "d": () => {
@@ -88,7 +93,7 @@ export default class NetworkPanel {
 
     this.layers.marquee.addChild(this.selectionMarquee);
 
-    paper.tool.on("keydown", (event: paper.KeyEvent) => this.keyBindings[event.key]?.());
+    paper.tool.on("keydown", (event: paper.KeyEvent) => this.keyBindings[event.key]?.(event));
 
     paper.view.on("mousedown", (event: paper.MouseEvent) => {
       this.marqueeStart = event.point.clone();
@@ -109,6 +114,9 @@ export default class NetworkPanel {
       this.selectionMarquee.visible = false;
       this.autoZoom();
     });
+
+    Object.values(network.neurons).forEach(this.addNeuron.bind(this));
+    Object.values(network.synapses).forEach(this.addSynapse.bind(this));
 
   }
 

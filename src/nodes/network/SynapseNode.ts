@@ -102,7 +102,6 @@ export default class SynapseNode extends ScreenElement {
 
   unselect(): void {
     if (!this.selected) return;
-    console.log("unselect");
     this.selected = false;
     this.nodeHandle.visible = false;
     this.repaint();

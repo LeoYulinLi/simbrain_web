@@ -30,7 +30,7 @@ export default class Network {
     if (peek) peek(this);
   }
 
-  createNeuron(...options: ConstructorParameters<typeof Neuron>): Neuron | null {
+  createNeuron(...options: ConstructorParameters<typeof Neuron>): Neuron {
     const newNeuron = new Neuron(...options);
     const id = Math.random();
     this.neurons[id] = newNeuron;
