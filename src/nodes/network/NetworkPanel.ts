@@ -151,7 +151,14 @@ export default class NetworkPanel {
       this.selectionManager.select([neuronNode], event);
     });
 
-    neuronNode.node.on("mousedrag", (event: paper.MouseEvent) => event.stopPropagation());
+    neuronNode.node.on("mousedrag", (event: paper.MouseEvent) => {
+      event.stopPropagation();
+      this.selectionManager.selectedNodes.forEach(n => {
+        if (n instanceof NeuronNode) {
+          n.neuron.coordinate = n.node.position.add(event.delta);
+        }
+      });
+    });
     neuronNode.node.on("click", (event: paper.MouseEvent) => event.stopPropagation());
     neuronNode.node.onMouseDown = (event: paper.MouseEvent) => {
       event.stopPropagation();

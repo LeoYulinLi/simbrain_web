@@ -65,9 +65,8 @@ export class NeuronNode extends ScreenElement {
       this.circle.fillColor = this.activationColor;
     });
 
-    this.node.on("mousedrag", (event: paper.MouseEvent) => {
-      this.node.position = this.node.position.add(event.delta);
-      neuron.coordinate = this.node.position;
+    neuron.events.on("location", location => {
+      this.node.position = new paper.Point(location);
     });
 
     this.node.on("mousedown", this.select.bind(this));
