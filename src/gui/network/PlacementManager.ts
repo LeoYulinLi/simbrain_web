@@ -1,5 +1,6 @@
 import LocatableModel from "../../model/network/interfaces/LocatableModel";
 import paper from "paper";
+import NetworkModel from "../../model/network/interfaces/NetworkModel";
 
 export default class PlacementManager {
 
@@ -11,7 +12,7 @@ export default class PlacementManager {
 
   private anchorLocation = () => new paper.Point(0, 0);
 
-  addLocatableModel(model: LocatableModel) {
+  addLocatableModel(model: LocatableModel): void {
     this.previousLocation = this.anchorLocation();
     if (this.useLastClickLocation) {
       model.coordinate = this.lastClickLocation;
@@ -22,8 +23,13 @@ export default class PlacementManager {
     this.anchorLocation = () => new paper.Point(model.coordinate);
   }
 
+  pasteModels(models: NetworkModel[]): void {
+    if (models.length === 0) return;
+
+  }
+
   get lastClickLocation(): paper.Point {
-    return this._lastClickLocation;
+    return this._lastClickLocation.clone();
   }
 
   set lastClickLocation(value: paper.Point) {

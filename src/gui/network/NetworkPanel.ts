@@ -8,6 +8,7 @@ import { Synapse } from "../../model/network/Synapse";
 import SynapseNode from "./SynapseNode";
 import ScreenElement from "./ScreenElement";
 import PlacementManager from "./PlacementManager";
+import NetworkClipboard from "./NetworkClipboard";
 
 export default class NetworkPanel {
 
@@ -18,6 +19,8 @@ export default class NetworkPanel {
   private placementManager = new PlacementManager();
 
   private selectionManager = new SelectionManager();
+
+  private clipBoard = new NetworkClipboard();
 
   private marqueeStart = { x: 0, y: 0 };
 
@@ -86,6 +89,16 @@ export default class NetworkPanel {
         Object.values(this.network.synapses).forEach(synapse => synapse.select("all"));
       }
     },
+    "c": event => {
+      if (event.modifiers.command) {
+        this.clipBoard.addModel(this.selectionManager.selectModel);
+      }
+    },
+    "v": event => {
+      if (event.modifiers.command) {
+        this.clipBoard.paste(this);
+      }
+    },
     "delete": () => this.selectionManager.selectedNodes.forEach(n => n.delete()),
     "d": () => {
       console.log(this.network.neurons);
@@ -93,7 +106,7 @@ export default class NetworkPanel {
     }
   }
 
-  constructor(private network: Network) {
+  constructor(readonly network: Network) {
     network.events.on("neuronAdded", this.addNeuron.bind(this));
     network.events.on("synapseAdded", this.addSynapse.bind(this));
 

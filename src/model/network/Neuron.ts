@@ -28,7 +28,10 @@ export class Neuron implements LocatableModel, NetworkModel {
   }>();
 
   constructor(options?: Pick<Partial<Neuron>, 'updateRule' | 'coordinate' | 'clamped' | 'value'>) {
-    Object.assign(this, options);
+    if (options?.updateRule) this.updateRule = options.updateRule;
+    if (options?.coordinate) this.coordinate = { ...options.coordinate };
+    if (options?.clamped) this.clamped = options.clamped;
+    if (options?.value) this.value = options.value;
   }
 
   get value(): number {

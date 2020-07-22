@@ -2,6 +2,8 @@ import paper from "paper";
 import ScreenElement from "./ScreenElement";
 import { NeuronNode } from "./NeuronNode";
 import difference from "lodash.difference";
+import NetworkModel from "../../model/network/interfaces/NetworkModel";
+import SynapseNode from "./SynapseNode";
 
 
 export default class SelectionManager {
@@ -47,6 +49,18 @@ export default class SelectionManager {
         e.markAsSource();
         this.sourceNodes.add(e);
       }
+    });
+  }
+
+  get selectModel(): NetworkModel[] {
+    return Array.from(this.selectedNodes).map(node => {
+      if (node instanceof NeuronNode) {
+        return node.neuron;
+      }
+      if (node instanceof SynapseNode) {
+        return node.synapse;
+      }
+      throw "Unsupported Network Model";
     });
   }
 
