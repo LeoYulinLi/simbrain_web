@@ -7,6 +7,7 @@ import SelectionManager from "./SelectionManager";
 import { Synapse } from "../../model/network/Synapse";
 import SynapseNode from "./SynapseNode";
 import ScreenElement from "./ScreenElement";
+import PlacementManager from "./PlacementManager";
 
 export default class NetworkPanel {
 
@@ -14,7 +15,7 @@ export default class NetworkPanel {
 
   private screenElements: Set<ScreenElement> = new Set();
 
-  private lastClickPosition: Coordinate = { x: 0, y: 0 };
+  private placementManager = new PlacementManager();
 
   private selectionManager = new SelectionManager();
 
@@ -37,7 +38,10 @@ export default class NetworkPanel {
   });
 
   private keyBindings: {[key: string]: (event: paper.KeyEvent) => void} = {
-    "p": () => this.network.createNeuron({ coordinate: this.lastClickPosition }),
+    "p": () => {
+      const neuron = this.network.createNeuron();
+      this.placementManager.addLocatableModel(neuron);
+    },
     "1": () => this.selectionManager.markSelectionAsSource(),
     "2": () => {
       this.selectionManager.sourceNodes.forEach(s => {
@@ -103,7 +107,7 @@ export default class NetworkPanel {
 
     paper.view.on("mousedown", (event: paper.MouseEvent) => {
       this.marqueeStart = event.point.clone();
-      this.lastClickPosition = event.point.clone();
+      this.placementManager.lastClickLocation = event.point.clone();
       this.autoZoom();
     });
 
