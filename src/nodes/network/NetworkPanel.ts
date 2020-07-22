@@ -75,6 +75,13 @@ export default class NetworkPanel {
       this.network.update();
     },
     "n": () => Object.values(this.network.neurons).forEach(neuron => neuron.select("n")),
+    "a": event => {
+      if (event.modifiers.command) {
+        event.preventDefault();
+        Object.values(this.network.neurons).forEach(neuron => neuron.select("all"));
+        Object.values(this.network.synapses).forEach(synapse => synapse.select("all"));
+      }
+    },
     "delete": () => this.selectionManager.selectedNodes.forEach(n => n.delete()),
     "d": () => {
       console.log(this.network.neurons);

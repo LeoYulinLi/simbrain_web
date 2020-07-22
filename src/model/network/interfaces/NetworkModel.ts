@@ -5,6 +5,7 @@ export interface NetworkModel {
   events: Emitter<{ delete: NetworkModel }>
 
   delete(): void;
+  select(tag?: any): void;
 }
 
 export default NetworkModel;

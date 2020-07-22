@@ -50,6 +50,7 @@ export default class SynapseNode extends ScreenElement {
     });
 
     this.synapse.events.on("updated", this.repaint.bind(this));
+    this.synapse.events.on("selected", this.select.bind(this));
   }
 
   repaint(): void {

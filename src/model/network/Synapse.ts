@@ -14,6 +14,7 @@ export class Synapse implements NetworkModel {
     updated: Synapse,
     delete: Synapse,
     location: Synapse,
+    selected: any
   }>();
 
   constructor(options: Pick<Synapse, 'source' | 'target'> & Pick<Partial<Synapse>, 'weight'>) {
@@ -37,6 +38,9 @@ export class Synapse implements NetworkModel {
     this.events.fire("delete", this);
   }
 
+  select(tag?: any): void {
+    this.events.fire("selected", tag);
+  }
 
   get weight(): number {
     return this._weight;
