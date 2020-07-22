@@ -1,7 +1,7 @@
 import "../styles/style.scss";
 import paper from "paper";
 import Network from "./model/network/Network";
-import NetworkPanel from "./nodes/network/NetworkPanel";
+import NetworkPanel from "./gui/network/NetworkPanel";
 
 document.addEventListener("DOMContentLoaded", () => {
   const canvas = document.createElement("canvas");
