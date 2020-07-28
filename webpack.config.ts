@@ -27,7 +27,8 @@ module.exports = {
       filename: "style.css"
     }),
     new HtmlWebpackPlugin({
-      template: "html/index.html"
+      template: "html/index.html",
+      favicon: "html/128.png"
     })
   ],
   resolve: {
