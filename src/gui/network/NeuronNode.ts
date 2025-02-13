@@ -23,7 +23,7 @@ export class NeuronNode extends ScreenElement {
     this.circle = new paper.Shape.Circle({
       point: [0, 0],
       radius: 12,
-      strokeColor: "black",
+      strokeColor: "#317BAC",
       fillColor: this.activationColor,
       insert: false
     });

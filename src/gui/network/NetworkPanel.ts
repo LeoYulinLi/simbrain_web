@@ -82,6 +82,7 @@ export default class NetworkPanel {
       this.network.update();
     },
     "n": () => Object.values(this.network.neurons).forEach(neuron => neuron.select("n")),
+    "w": () => Object.values(this.network.synapses).forEach(synapse => synapse.select("w")),
     "a": event => {
       if (event.modifiers.command) {
         event.preventDefault();
@@ -98,6 +99,16 @@ export default class NetworkPanel {
       if (event.modifiers.command) {
         this.clipBoard.paste(this);
       }
+    },
+    "r": () => {
+      this.selectionManager.selectModel.forEach(m => {
+        if (m instanceof Neuron) {
+          m.value = (Math.random() - 0.5) * 2.0
+        }
+        if (m instanceof Synapse) {
+          m.weight = (Math.random() - 0.5) * 10.0
+        }
+      })
     },
     "delete": () => this.selectionManager.selectedNodes.forEach(n => n.delete()),
     "d": () => {
@@ -213,6 +224,10 @@ export default class NetworkPanel {
   private autoZoom() {
     this.project.view.zoom = this.preferredZoomLevel;
     this.project.view.center = this.layerBound.center;
+  }
+
+  clearSelection() {
+    this.selectionManager.select([]);
   }
 
 }

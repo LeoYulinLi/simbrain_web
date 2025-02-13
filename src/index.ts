@@ -2,58 +2,46 @@ import "../styles/style.scss";
 import paper from "paper";
 import Network from "./model/network/Network";
 import NetworkPanel from "./gui/network/NetworkPanel";
+import { setInterval } from "timers";
 
 document.addEventListener("DOMContentLoaded", () => {
   const canvas = document.createElement("canvas");
-  canvas.width = 800;
-  canvas.height = 600;
+  canvas.width = 400;
+  canvas.height = 300;
   paper.setup(canvas);
 
-  const appDiv = document.getElementById("app") as HTMLDivElement;
+  const appDiv = document.getElementById("simbrain_web") as HTMLDivElement;
 
   appDiv.appendChild(canvas);
 
   paper.tool = new paper.Tool();
 
   const demoNetwork = new Network();
-  const neuron1 = demoNetwork.createNeuron({
-    coordinate: { x: 0, y: 100 },
-    value: 0.7
-  });
-  const neuron2 = demoNetwork.createNeuron({
-    coordinate: { x: 0, y: 0 },
-    value: -0.2
-  });
-  const neuron3 = demoNetwork.createNeuron({
-    coordinate: { x: 0, y: -100 },
-    value: 0.3
-  });
-  const neuron4 = demoNetwork.createNeuron({
-    coordinate: { x: 141, y: 0 }
-  });
-  const neuron5 = demoNetwork.createNeuron({
-    coordinate: { x: 282, y: 0 }
-  });
-  demoNetwork.createSynapse({
-    source: neuron1,
-    target: neuron4
-  });
-  demoNetwork.createSynapse({
-    source: neuron2,
-    target: neuron4,
-    weight: 3
-  });
-  demoNetwork.createSynapse({
-    source: neuron3,
-    target: neuron4,
-    weight: -1
-  });
-  demoNetwork.createSynapse({
-    source: neuron4,
-    target: neuron5,
-    weight: -1
-  });
+
+  const neuronsCoordinates = (window as any).neuronCoordinates as [number, number][];
+
+  const neurons = neuronsCoordinates.map(([x, y]) => demoNetwork.createNeuron({
+    coordinate: {x, y}
+  }));
+
+  (window as any).neurons = neurons;
+
+  const synapseIndices = (window as any).synapseIndices as [number, number][];
+  
+  const synapses = synapseIndices.map(([sourceIndex, targetIndex]) => (
+    demoNetwork.createSynapse({
+      source: neurons[sourceIndex],
+      target: neurons[targetIndex],
+      weight: (Math.random() - 0.5) * 2.0
+    })
+  ));
+
+  (window as any).synapses = synapses;
 
   const networkPanel = new NetworkPanel(demoNetwork);
+
+  (window as any).networkPanel = networkPanel;
+
+  networkPanel.clearSelection();
 
 });
